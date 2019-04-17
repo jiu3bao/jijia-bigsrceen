@@ -1,7 +1,7 @@
 
 <template>
     <div class="price">
-        <div class="jiage">钢材价格对比</div>
+        <div class="jiage">{{this.$store.state.chosedCate.name}}价格对比</div>
         <div class="duibi">
              <div id="main"></div>
         </div>

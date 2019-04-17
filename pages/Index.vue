@@ -12,17 +12,17 @@
        </div>
        <div class='content'>
            <div class='left'>
-               <cate></cate>
-               <price></price>
-                <redar></redar>
+                <cate :cateList='cateList'></cate>
+                <price :allData='allData'></price>
+                <redar :allData='allData'></redar>
            </div>
            <div class='center'>
-               <maps></maps>
-                <areas> </areas>
+                <maps></maps>
+                <areas :allData='allData'> </areas>
            </div>
            <div class='right'>
                <exponent></exponent>
-               <huanbi></huanbi>
+               <huanbi :area_price_hb='area_price_hb'></huanbi>
            </div>
        </div>
     </div>
@@ -37,6 +37,8 @@ import exponent from '../components/cate-price-zs'
 import maps from '../components/map'
 import areas from '../components/area-price'
 
+import api from "../api/api";
+
 
 function setState(store) {}
 
@@ -44,7 +46,40 @@ export default {
     name: 'index',
     data(){
         return{
-            date:''
+            date:'',
+            area_price_hb:[],
+            cateList:[],
+            new_area_code:'',
+            allData:[]
+        }
+    },
+    created() {
+        this.get_cate_list()
+        //this.get_price_hb()
+    },
+    computed:{
+        chose_map() {
+            return this.$store.state.chosedMap
+        },
+        cateId() {
+            return this.$store.state.chosedCate.id
+        }
+    },
+    watch:{
+        chose_map: {
+            handler(val, oldval) {
+                console.log(val,oldval)
+                if(val.length>0) {
+                    this.new_area_code = val[val.length-1]
+                    this.get_price_hb(new_area_code, this.cateId)
+                    this.get_data()
+                } 
+            },
+            deep: true
+        },
+        cateId(val) {
+            this.get_price_hb()
+            this.get_data()
         }
     },
     metaInfo: {
@@ -67,33 +102,54 @@ export default {
     },
     methods:{
         CurentTime()   { 
-        var now = new Date(); 
-        var year = now.getFullYear();       //年
-        var month = now.getMonth() + 1;     //月
-        var day = now.getDate();            //日   
-        var hh = now.getHours();            //时
-        var mm = now.getMinutes();          //分 
-        var clock = year + "-"; 
-        if(month < 10)
-            clock += "0";   
-        clock += month + "-";   
-        if(day < 10)
-            clock += "0";       
-        clock += day + " ";     
-        if(hh < 10)
-            clock += "0";    
-        clock += hh + ":";
-        if (mm < 10) clock += '0'; 
-        clock += mm; 
-        return(clock); 
-                } 
+            var now = new Date(); 
+            var year = now.getFullYear();       //年
+            var month = now.getMonth() + 1;     //月
+            var day = now.getDate();            //日   
+            var hh = now.getHours();            //时
+            var mm = now.getMinutes();          //分 
+            var clock = year + "-"; 
+            if(month < 10)
+                clock += "0";   
+            clock += month + "-";   
+            if(day < 10)
+                clock += "0";       
+            clock += day + " ";     
+            if(hh < 10)
+                clock += "0";    
+            clock += hh + ":";
+            if (mm < 10) clock += '0'; 
+            clock += mm; 
+            return(clock); 
+        },
+        async get_price_hb() {//获取价格环比数据 用于面积图
+            const data = {
+                areaId: this.new_area_code,
+                cateId: this.cateId
+            }
+            const res = await api.get_cate_data(data)
+            this.area_price_hb.push(res.data.list)
+        },
+        async get_cate_list() {
+            const res = await api.get_cate({a:1})
+            this.cateList = res.data.data
+            this.cateId = this.cateList[0]
+            this.$store.commit('SET_CHOSED_CATE',this.cateId)
+        },
+        async get_data() {// 获取全部数据
+            const data = {
+                areaId: this.new_area_code,
+                cateId: this.cateId
+            }
+            const res = await api.get_cate_data(data)
+            this.allData = res.data.list
+        } 
     },
     mounted(){
         //每1秒刷新时间
-        var that=this;
-           setInterval(() => {
+        setInterval(() => {
             this.date=this.CurentTime()
-            }, 1000)
+        }, 1000)
     }
 
 };

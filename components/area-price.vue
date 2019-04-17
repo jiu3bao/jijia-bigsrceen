@@ -1,7 +1,7 @@
 
 <template>
     <div class="area">
-        <div class="dizhou">各地州市钢材价格情况</div>
+        <div class="dizhou">各地州市{{this.$store.state.chosedCate.name}}价格情况</div>
         <div class="adxbox"  @mouseenter="pauseScroll" @mouseleave="resumeScroll" >
             <el-table 
                 :data="list"

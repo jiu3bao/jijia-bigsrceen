@@ -1,7 +1,7 @@
 
 <template>
     <div class="redar">
-        <div class="xiangmu">钢筋波动情况</div>
+        <div class="xiangmu">{{this.$store.state.chosedCate.name}}波动情况</div>
         <div class="leida">
             <div id="main2" ></div>
         </div>

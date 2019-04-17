@@ -1,5 +1,5 @@
 {
-    "buildVersion": 1555493428917,
+    "buildVersion": 1555507793242,
     "build": {
         "ssr": false,
         "publicPath": "/",
@@ -26,7 +26,7 @@
     },
     "serviceWorker": {
         "enable": true,
-        "swDest": "C:\\Users\\Administrator\\Desktop\\监测大屏\\dist\\service-worker.js"
+        "swDest": "C:\\Users\\Administrator\\Desktop\\jijia-bigsrceen\\dist\\service-worker.js"
     },
     "skeleton": {
         "enable": true,

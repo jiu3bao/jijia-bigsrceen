@@ -3,36 +3,31 @@
 	<div class="cate-list">
 		<div class="cailiao">材料名称</div>
 		<div class="leiming">
-		<el-tree default-expand-all :data="cate" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+		<el-tree default-expand-all :data="cateList" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 		</div>
 	</div>
 </template>
 <script>
 // 材料名称组件
-import api from "../api/api";
 export default {
     data() {
         return {
-          cate: [],
           defaultProps: {
-            children: "childrenList", //绑定名字与接口文档名字一样
+            children: "children", //绑定名字与接口文档名字一样
             label: "name"
           }
         };
-    },
+	},
+	props:{
+		cateList:{
+			type: Array
+		}
+	},
 	methods: {
 		handleNodeClick(data) {
 			this.$store.commit('SET_CHOSED_CATE', data)
 		},
-		async get_calilaio() {
-			const data = {};
-			const res = await api.get_calilaio(data); //拿到材料数据的接口
-			this.cate = res.data; //材料数据赋值给cate
-		}
 	},
-	created() {
-		this.get_calilaio();
-	}
 };
 </script>
 <style lang="stylus" scoped>

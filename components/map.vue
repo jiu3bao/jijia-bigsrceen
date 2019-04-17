@@ -21,34 +21,27 @@
 import yn from '../static/YNprovince.json'
 import echarts from 'echarts'
 import $ from 'jquery'
+import api from '../api/api'
 
 export default {
-      data() {
+    data() {
         return {
-            qu_url:'',
-            city_code:'',
-            show_qu:false
+            areaList:[],
+            chosedList:[]
         }
     },
-    props:{
-        area: String
-    },
-    watch: {
-        area(val) {
-            console.log(val,90909)
-            val.length == 0? this.city_code ='':''
-        }
+    created() {
+        this.get_area()
     },
     mounted() {
         this.init_map()
     },
     methods:{
-        chose_map(val) {
-            this.city_code = val.id
-            this.$emit('chose_area', val)
-        },
-        show_ifra() {
-
+        async get_area() {
+            console.log(123132)
+            const res = await api.get_area()
+            console.log(res)
+            this.areaList = res.data
         },
         init_map() {
             echarts.registerMap('yn', yn);
@@ -57,7 +50,8 @@ export default {
                 series: [{
                     type: 'map',
                     map: 'yn',
-                    zoom: 1.2,//放大缩小地图，默认是1
+                    aspectScale:1.1,
+                    //zoom: 1.2,//放大缩小地图，默认是1
                     itemStyle: {
                         normal: {
                             show:true,
@@ -139,9 +133,15 @@ export default {
                     </div>`
                 },
             });
-            chart.on('click', function (param){
-                var selected = param.selected;
-                console.log(param.name)
+            chart.on('click', par => {
+                const reg = new RegExp(par.name)
+                const area_item = this.areaList.find(item => {
+                    return reg.test(item.name)
+                })
+                if(area_item) {
+                    //this.chosedList.push(area_item.id)
+                    this.$store.commit('ADD_CHOSED_MAP', area_item)
+                }
             });
         }
     },

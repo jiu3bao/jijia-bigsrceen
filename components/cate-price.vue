@@ -1,7 +1,7 @@
 
 <template>
     <div class="link">
-         <div class="cate-price">材料价格环比</div>
+         <div class="cate-price">{{this.$store.state.chosedCate.name}}价格环比</div>
         <div class="huanbi">
             <div id="mains" style="width: 360px;height:300px;"></div>
         </div>
@@ -12,86 +12,91 @@
 import echarts from 'echarts'
 export default {
     name:"cate-price",
+    props:{
+        area_price_hb:{
+            type: Array
+        }
+    },
     methods:{
         huanbi(){
             var myCharts = echarts.init(document.getElementById('mains'))
-             var options = {
-    title : {
-        text: '',
-        subtext: ''
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    grid:{
-        x:'25%',
-        y:'10%',
-        x2:'10%',
-        y2:'10%',
-    },
-    legend: {
-        data:['意向','预购','成交'],
-        textStyle: {
-            fontSize: 12,
-            color: '#F1F1F3'
-        }
-    },
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['周一','周二','周三','周四','周五','周六','周日'],
-            axisLine:{
-			        lineStyle:{
-			            color:'#F1F1F3',//修改字体颜色
-			            width:2
-			        }
-			    },
-        },
-
-    ],
-    yAxis : [
-        {
-            type : 'value',
-             axisLine:{
-			        lineStyle:{
-			            color:'#F1F1F3',
-			            width:2
-			        }
-			    },
-        }
-    ],
-    series : [
-        {
-            name:'成交',
-            type:'line',
-            smooth:true,
-            itemStyle: {
-                normal: {
-                    areaStyle:{ 
-                    type: 'default'
+            var options = {
+                title : {
+                    text: '',
+                    subtext: ''
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                grid:{
+                    x:'25%',
+                    y:'10%',
+                    x2:'10%',
+                    y2:'10%',
+                },
+                legend: {
+                    data:['意向','预购','成交'],
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#F1F1F3'
                     }
-            },
-            },
-            data:[10, 12, 21, 54, 260, 830, 710]
-        },
-        {
-            name:'预购',
-            type:'line',
-            smooth:true,
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[30, 182, 434, 791, 390, 30, 10]
-        },
-        {
-            name:'意向',
-            type:'line',
-            smooth:true,
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[1320, 1132, 601, 234, 120, 90, 20]
-        },
-         ]
-};                
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : ['周一','周二','周三','周四','周五','周六','周日'],
+                        axisLine:{
+                                lineStyle:{
+                                    color:'#F1F1F3',//修改字体颜色
+                                    width:2
+                                }
+                            },
+                    },
+
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        axisLine:{
+                                lineStyle:{
+                                    color:'#F1F1F3',
+                                    width:2
+                                }
+                            },
+                    }
+                ],
+                series : [
+                    {
+                        name:'成交',
+                        type:'line',
+                        smooth:true,
+                        itemStyle: {
+                            normal: {
+                                areaStyle:{ 
+                                type: 'default'
+                                }
+                        },
+                        },
+                        data:[10, 12, 21, 54, 260, 830, 710]
+                    },
+                    {
+                        name:'预购',
+                        type:'line',
+                        smooth:true,
+                        itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                        data:[30, 182, 434, 791, 390, 30, 10]
+                    },
+                    {
+                        name:'意向',
+                        type:'line',
+                        smooth:true,
+                        itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                        data:[1320, 1132, 601, 234, 120, 90, 20]
+                    },
+                    ]
+            };                
             myCharts.setOption(options);
         }
     },
