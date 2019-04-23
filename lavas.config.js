@@ -14,7 +14,7 @@ module.exports = {
     build: {
         ssr: false,
         path: BUILD_PATH,
-        publicPath: '/',
+        publicPath: './',
         ssrCopy: isDev ? [] : [
             {
                 src: 'server.prod.js'
@@ -25,8 +25,8 @@ module.exports = {
         ]
     },
     router: {
-        mode: 'history',
-        base: '/',
+        mode: 'hash',
+        base: './',
         pageTransition: {
             type: 'fade',
             transitionClass: 'fade'
@@ -41,7 +41,7 @@ module.exports = {
         swSrc: path.join(__dirname, 'core/service-worker.js'),
 
         // Path of generated service worker file
-        swDest: path.join(BUILD_PATH, 'service-worker.js'),
+        swDest: path.join(BUILD_PATH, './service-worker.js'),
 
         // If true, `workbox.routing.registerNavigationRoute()` won't be generated
         // Defaults to `false`

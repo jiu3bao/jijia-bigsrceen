@@ -16,20 +16,13 @@
                     <div  v-for='item in cate' :key='item.id'>
                         <div :class="item.level ==1? 'datas':'data'">
                             <div class="data_names">{{item.name}}</div>
-                            <div class="data_numbers">{{item.price}}1231</div>
-                            <div class="data_updowns">{{item.zs}}1231</div>
-                            <div class="data_icons">
-                                <img src="../static/img/up.png"/>
+                            <div class="data_numbers">{{item.price.length>0?Number(item.price).toFixed(2):'-'}}</div>
+                            <div class="data_updowns">{{item.huanbi.length>0?(Number(item.huanbi)*100).toFixed(4)+'%':'-'}}</div>
+                            <div class="data_icons" v-if='item.huanbi.length>0'>
+                                <img src="../static/img/up.png" v-if='item.huanbi>0'/>
+                                <img src="../static/img/downs.png" v-if='item.huanbi<0'/>
                             </div> 
                         </div>
-                        <!--div class="data" v-for='child in twolevel' :key='child.id'>
-                            <div class="data_name">{{child.name}}</div>
-                            <div class="data_number">{{child.price}}</div>
-                            <div class="data_updown">{{child.zs}}</div>
-                            <div class="data_icon">
-                                <img src="../static/img/up.png"/>
-                            </div>
-                        </div-->
                     </div>
                 </div>
                 
@@ -55,9 +48,9 @@ export default {
            twolevel:[]
         }
     },
-    // created() {
-    //     this.setdata()
-    // },
+    created() {
+        this.get_cate()
+    },
     methods:{
         dianji(){
             this.active=true
@@ -71,7 +64,8 @@ export default {
         //     })
         // },
       	scrollAuto() {//滚动
-			// 动画开始
+            // 动画开始
+            console.log(123132)
             let $sw = $(".dataset")
             let sHeight = $("#con").height()
             if(sHeight < 100) {
@@ -88,7 +82,6 @@ export default {
                     delay:0
                 })
             }
-            console.log(121)
         },
         pauseScroll() {
             if(!this.rightAm) return
@@ -100,23 +93,30 @@ export default {
             this.rightAm.play()
         },
         async get_cate(){
+            const t = new Date()
+            const y = t.getFullYear()
+            let m = t.getMonth()+1
+            if(m<10) {
+                m='0'+m
+            }
             const data = {
                 type:"0",
-                area:"530112000000",
-                stratDate:"2019-03",
-                endDate:"2019-03",
+                area:"53",
+                startDate: y+'-' +m,
+                endDate:y+'-' +m,
                 level:"1,2"		
-                }
-            const res = await api.test(data)//拿到材料数据的接口
+            }
+            const res = await api.get_cate_data(data)//拿到材料数据的接口
             this.cate = res.data
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    this.scrollAuto()
+                }, 0)
+            })
         }
     },
     mounted() {
-        let that = this
-        setTimeout(() => {
-
-            that.scrollAuto()
-        }, 0)
+        
     },
     created(){
         this.get_cate()
@@ -137,7 +137,7 @@ px2vh(px)
 .caijia
     width px2vw(380) 
     height px2vh(50) 
-    background url(../static/img/right.png)
+    background url(/static/img/right.png)
     background-size 100% 100%
     line-height px2vh(50)
     font-size 16px
@@ -148,7 +148,7 @@ px2vh(px)
 .zhishu
     width px2vw(380) 
     height px2vh(460) 
-    background url(../static/img/zhis.png)
+    background url(/static/img/zhis.png)
     background-size 100% 100%
     margin-top px2vh(10)
     overflow auto
@@ -164,7 +164,6 @@ px2vh(px)
     margin-top px2vh(20)
     display  flex
     justify-content space-around
-    line-height px2vh(30)
     font-size 16px
     font-family MicrosoftYaHei
     font-weight 400

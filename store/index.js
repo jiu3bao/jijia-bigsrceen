@@ -8,6 +8,7 @@ export const state = () => {
 export const mutations = {
     SET_CHOSED_CATE(state, data) {
         state.chosedCate = data;
+        console.log(state.chosedCate)
     },
     ADD_CHOSED_MAP(state, data) {
         state.chosedMap.push(data);

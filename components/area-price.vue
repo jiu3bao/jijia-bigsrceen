@@ -4,7 +4,7 @@
         <div class="dizhou">各地州市{{this.$store.state.chosedCate.name}}价格情况</div>
         <div class="adxbox"  @mouseenter="pauseScroll" @mouseleave="resumeScroll" >
             <el-table 
-                :data="list"
+                :data="tableData"
                 style="width: 100%">
                 <el-table-column
                     prop="name"
@@ -15,14 +15,13 @@
                     </template>
                 </el-table-column>
                 <el-table-column 
-                    v-for='(item, index) in list[0]'
+                    v-for='(item, index) in tableData[0]'
                     :key='index'
                     prop="name"
-                    :label="
-                    item.time"
+                    :label="item.asmdate?item.asmdate.substr(0,7):''"
                     width="100">
-                  <template >
-                      {{item.price}}
+                  <template slot-scope="scoped">
+                      {{Number(scoped.row[index]?scoped.row[index]['price']:'-').toFixed(2)}}
                   </template>
                 </el-table-column>
             </el-table>
@@ -37,108 +36,103 @@ import ScrollToPlugin from "gsap/ScrollToPlugin";
 export default {
    data() {
         return {
-            tableData: [],
             rightAm:null,
             rightTime:null,
-            times:[],
-            prices:[],
-            lists:[],
-            constractList:[],
-            area:[{"id":"530100000000","name":"昆明市","level":"2","pid":"53","geocode":"102.832891,24.880095"},{"id":"530300000000","name":"曲靖市","level":"2","pid":"53","geocode":"103.796167,25.489999"},{"id":"530400000000","name":"玉溪市","level":"2","pid":"53","geocode":"102.546543,24.352036"},{"id":"530500000000","name":"保山市","level":"2","pid":"53","geocode":"99.161761,25.112046"},{"id":"530600000000","name":"昭通市","level":"2","pid":"53","geocode":"103.717465,27.338257"},{"id":"530700000000","name":"丽江市","level":"2","pid":"53","geocode":"100.227750,26.855047"},{"id":"530800000000","name":"普洱市","level":"2","pid":"53","geocode":"100.966512,22.825065"},{"id":"530900000000","name":"临沧市","level":"2","pid":"53","geocode":"100.079583,23.877573"},{"id":"532300000000","name":"楚雄州","level":"2","pid":"53","geocode":"101.528068,25.045532"},{"id":"532500000000","name":"红河州","level":"2","pid":"53","geocode":"103.374799,23.363130"},{"id":"532600000000","name":"文山州","level":"2","pid":"53","geocode":"104.216248,23.400733"},{"id":"532800000000","name":"西双版纳州","level":"2","pid":"53","geocode":"100.797777,22.007351"},{"id":"532900000000","name":"大理州","level":"2","pid":"53","geocode":"100.267638,25.606486"},{"id":"533100000000","name":"德宏州","level":"2","pid":"53","geocode":"98.584895,24.433353"},{"id":"533300000000","name":"怒江州","level":"2","pid":"53","geocode":"98.853097,25.852547"},{"id":"533400000000","name":"迪庆州","level":"2","pid":"53","geocode":"99.702234,27.818882"}],
-            list:[[
-                {
-                    x:'2019.02.01',
-                    price:(1000+Math.random()*1000).toFixed(2),
-                    zs:(2000+Math.random()*1000).toFixed(2),
-                    tb:(3000+Math.random()*1000).toFixed(2),
-                    hb:(4000+Math.random()*1000).toFixed(2),
-                    add: '昆明',
-                    time: '2019.02.01'
-                },{
-                    x:'2019.02.02',
-                    price:(1000+Math.random()*1000).toFixed(2),
-                    zs:(2000+Math.random()*1000).toFixed(2),
-                    tb:(2000+Math.random()*1000).toFixed(2),
-                    hb:(4000+Math.random()*1000).toFixed(2),
-                    add: '昆明',
-                    time: '2019.02.01'
-                },{
-                    x:'2019.02.04',
-                    price:(1000+Math.random()*1000).toFixed(2),
-                    zs:(2000+Math.random()*1000).toFixed(2),
-                    tb:(3000+Math.random()*1000).toFixed(2),
-                    hb:(4000+Math.random()*1000).toFixed(2),
-                    add: '昆明',
-                    time: '2019.02.01'
-                }
-            ],[
-                {
-                    x:'2019.02.01',
-                    price:(1000+Math.random()*1000).toFixed(2),
-                    zs:(2000+Math.random()*1000).toFixed(2),
-                    tb:(3000+Math.random()*1000).toFixed(2),
-                    hb:(4000+Math.random()*1000).toFixed(2),
-                    add: '曲靖',
-                    time: '2019.02.01'
-                },{
-                    x:'2019.02.02',
-                    price:(1000+Math.random()*1000).toFixed(2),
-                    zs:(2000+Math.random()*1000).toFixed(2),
-                    tb:(2000+Math.random()*1000).toFixed(2),
-                    hb:(4000+Math.random()*1000).toFixed(2),
-                    add: '曲靖',
-                    time: '2019.02.01'
-                },{
-                    x:'2019.02.04',
-                    price:(1000+Math.random()*1000).toFixed(2),
-                    zs:(2000+Math.random()*1000).toFixed(2),
-                    tb:(3000+Math.random()*1000).toFixed(2),
-                    hb:(4000+Math.random()*1000).toFixed(2),
-                    add: '曲靖',
-                    time: '2019.02.01'
-                }
-            ]]
+            tableData:[]
         }
-      },
-      created() {
-          
-      },
-      methods:{
-         	scrollAuto() {//滚动
-			// 动画开始
-            let $sw = $(".adxbox")
-            let sHeight = $(".adxbox").height()
-            if(sHeight < 100) {
-                return
-            } else {
-                $sw.scrollTop(0)
-                this.rightAm = TweenMax.to(".adxbox", 100, {
-                    scrollTo: {
-                        y: "max"
-                    },
-                    repeat: -1,
-                    yoyo: true,
-                    repeatDelay: 1,
-                    delay:1
+    },
+    props:{
+        area_price_hb:{
+            type:Array
+        },
+        areaList:{
+            type:Array
+        }
+    },
+    watch:{
+        area_price_hb:{
+            handler(val) {
+                let area_list=[]
+                if(val.length>0) {
+                    val.filter(item => {
+                        let has = false
+                        if(area_list.length ==0) {
+                            area_list.push([])
+                        }
+                        area_list.map(arr => {
+                            if(arr.length ==0) {
+                                arr.push(item)
+                                has = true
+                            } else {
+                                if(arr[0].area == item.area) {
+                                    arr.push(item)
+                                    has = true
+                                } else {
+                                    has = false
+                                }
+                            }
+                        })
+                        if(!has) {
+                            area_list.push([item])
+                        }
+                    })
+                }
+                this.tableData = area_list
+                this.tableData.filter(son => {
+                    if(son[0].area.length > '2') {
+                        this.areaList.forEach(area => {
+                            if(area.id == son[0].area) {
+                                son[0].add = area.name
+                                return
+                            }
+                        })
+                    }
                 })
-            }
-        },
-        pauseScroll() {
-            if(!this.rightAm) return //避免报错
-            this.rightAm.pause()
-            this.rightTime = this.rightAm.time()
-        },
-        resumeScroll() {
-            if(!this.rightAm) return //避免报错
-            this.rightAm.play()
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.scrollAuto()
+                    }, 0)
+                })
+            },
+            deep: true
         }
-      },
-      mounted() {
-            let that = this
-            setTimeout(() => {
-				that.scrollAuto()
-            }, 3000)
+    },
+    created() {
+        
+    },
+    methods:{
+        scrollAuto() {//滚动
+        // 动画开始
+        let $sw = $(".adxbox")
+        let sHeight = $(".adxbox").height()
+        if(sHeight < 100) {
+            return
+        } else {
+            $sw.scrollTop(0)
+            this.rightAm = TweenMax.to(".adxbox", 100, {
+                scrollTo: {
+                    y: "max"
+                },
+                repeat: -1,
+                yoyo: true,
+                repeatDelay: 1,
+                delay:1
+            })
         }
+    },
+    pauseScroll() {
+        if(!this.rightAm) return //避免报错
+        this.rightAm.pause()
+        this.rightTime = this.rightAm.time()
+    },
+    resumeScroll() {
+        if(!this.rightAm) return //避免报错
+        this.rightAm.play()
+    }
+    },
+    mounted() {
+ 
+    }
 }
 
     
@@ -154,7 +148,7 @@ px2vh(px)
     padding px2vh(20) px2vw(20) 0
 .dizhou
     height px2vh(50)
-    background url(../static/img/xia.png)
+    background url(/static/img/xia.png)
     background-size 100% 100%
     font-size 16px
     font-family MicrosoftYaHei-Bold
@@ -164,7 +158,7 @@ px2vh(px)
 .adxbox
     width px2vw(1080)
     height px2vh(180)
-    background url(../static/img/adss.png)
+    background url(/static/img/adss.png)
     background-size 100% 100%
     margin-top px2vh(10)
     padding-top px2vh(20)

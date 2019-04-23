@@ -14,8 +14,68 @@ export default {
     name:"price",
     data() {
         return {
-            area:[{"id":"530100000000","name":"昆明市","level":"2","pid":"53","geocode":"102.832891,24.880095"},{"id":"530300000000","name":"曲靖市","level":"2","pid":"53","geocode":"103.796167,25.489999"},{"id":"530400000000","name":"玉溪市","level":"2","pid":"53","geocode":"102.546543,24.352036"},{"id":"530500000000","name":"保山市","level":"2","pid":"53","geocode":"99.161761,25.112046"},{"id":"530600000000","name":"昭通市","level":"2","pid":"53","geocode":"103.717465,27.338257"},{"id":"530700000000","name":"丽江市","level":"2","pid":"53","geocode":"100.227750,26.855047"},{"id":"530800000000","name":"普洱市","level":"2","pid":"53","geocode":"100.966512,22.825065"},{"id":"530900000000","name":"临沧市","level":"2","pid":"53","geocode":"100.079583,23.877573"},{"id":"532300000000","name":"楚雄彝族自治州","level":"2","pid":"53","geocode":"101.528068,25.045532"},{"id":"532500000000","name":"红河哈尼族彝族自治州","level":"2","pid":"53","geocode":"103.374799,23.363130"},{"id":"532600000000","name":"文山壮族苗族自治州","level":"2","pid":"53","geocode":"104.216248,23.400733"},{"id":"532800000000","name":"西双版纳傣族自治州","level":"2","pid":"53","geocode":"100.797777,22.007351"},{"id":"532900000000","name":"大理白族自治州","level":"2","pid":"53","geocode":"100.267638,25.606486"},{"id":"533100000000","name":"德宏傣族景颇族自治州","level":"2","pid":"53","geocode":"98.584895,24.433353"},{"id":"533300000000","name":"怒江傈僳族自治州","level":"2","pid":"53","geocode":"98.853097,25.852547"},{"id":"533400000000","name":"迪庆藏族自治州","level":"2","pid":"53","geocode":"99.702234,27.818882"}],
-            areaList:[]
+        }
+    },
+    props:{
+        season_price:{
+            type:Array
+        },
+        areaList:{
+            type:Array
+        }
+    },
+    watch:{
+        season_price:{
+            handler(val) {
+                console.log(val,'ssssppp')
+                let area_arr = []
+                let val1 = []
+                let val2 = []
+                let legend = []
+                if(val[0].length == 0) {
+                    return
+                }
+                val[0].forEach(item => {
+                    this.areaList.forEach(area => {
+                        if(area.id == item.area) {
+                            if(area.name=='西双版纳傣族自治州') {
+                                area_arr.unshift(area.name.substr(0,4))
+                            } else {
+                                area_arr.unshift(area.name.substr(0,2))
+                            }
+                            
+                            return
+                        }
+                    })
+                    
+                    val1.unshift(Number(item.price).toFixed(2))
+                })
+                console.log(area_arr,'123112')
+                const m1 = val[0][0]?new Date(val[0][0].asmdate).getMonth()+1:''
+                const m2 = val[1][0]?new Date(val[1][0].asmdate).getMonth()+1:''
+                if(m1>9) {
+                    legend.push('第四季度')
+                } else if(m1>6) {
+                    legend.push('第三季度')
+                } else if(m1>3) {
+                    legend.push('第二季度')
+                } else {
+                    legend.push('第一季度')
+                }
+                if(m2>9) {
+                    legend.push('第四季度')
+                } else if(m2>6) {
+                    legend.push('第三季度')
+                } else if(m2>3) {
+                    legend.push('第二季度')
+                } else {
+                    legend.push('第一季度')
+                }
+                val[1].forEach(item => {
+                    val2.unshift(Number(item.price).toFixed(2))
+                })
+                this.init(area_arr,legend,val1,val2)
+            }
         }
     },
     methods:{
@@ -23,7 +83,8 @@ export default {
            // this.area.
             //this.areaList.push(list)
         },
-        inits(){
+        init(area,legend,val1,val2){
+            console.log(legend,'legend')
             var myChart = echarts.init(document.getElementById('main'))
             var  option = {
                 title: {
@@ -38,16 +99,16 @@ export default {
                 },
                 legend: {
                     icon : 'circle',
-                    data: ['2018年', '2019年'],
+                    data: legend,
                     textStyle:{
                         color:'#AAABBC'
                     }
                 },
                 grid: {
-                    top:'15%',//距上边距
-                    left:'5%',//距离左边距
+                    top:'40px',//距上边距
+                    left:'0',//距离左边距
                     right:'15%',//距离右边距
-                    bottom:'5%',//距离下边距
+                    bottom:'10px',//距离下边距
                     containLabel: true
                 },
                 xAxis: {
@@ -63,25 +124,25 @@ export default {
                 },
                 yAxis: {
                     type: 'category',
-                    data: ['昆明','曲靖','大理','丽江'],
+                    data: area,
                     axisLine:{     
-                                    show:false,//y轴坐标轴
-                                    lineStyle:{
-                                        color:'#AAABBC',
-                                    }
-                                } ,
-                        axisTick: {
+                        show:false,//y轴坐标轴
+                        lineStyle:{
+                            color:'#AAABBC',
+                        }
+                    } ,
+                    axisTick: {
                         show:false //刻度线
                     },
 
                 },
                 series: [
                     {
-                        name: '2018年',
+                        name: legend[0],
                         type: 'bar',
-                        barGap:'80%',/*多个并排柱子设置柱子之间的间距*/
+                        barGap:'50px',/*多个并排柱子设置柱子之间的间距*/
                         barCategoryGap:'20%',/*多个并排柱子设置柱子之间的间距*/
-                        data: [18203, 13489, 29034, 104970],
+                        data: val1,
                         itemStyle:{
                             normal:{
                                 color:'#302ffe',
@@ -96,11 +157,11 @@ export default {
                         }         
                     },
                     {
-                        name: '2019年',
+                        name: legend[1],
                         type: 'bar',
                         barGap:'80%',
                         barCategoryGap:'20%',
-                        data: [19325, 23438, 31000, 121594],
+                        data:val2,
                         itemStyle:{
                             normal:{
                                 color:'#10bfe3',
@@ -121,9 +182,6 @@ export default {
         }
       
     },
-    mounted(){
-        this.inits()
-    }
 }
 </script>
 <style lang="stylus" scoped>
@@ -145,7 +203,7 @@ px2vh(px)
 .jiage
     width px2vw(380) 
     height px2vh(50) 
-    background url(../static/img/right.png)
+    background url(/static/img/right.png)
     background-size 100% 100%
     line-height px2vh(50)
     font-size 16px
@@ -156,14 +214,14 @@ px2vh(px)
 .duibi
     width px2vw(380) 
     height px2vh(240)
-    background url(../static/img/price.png)
+    background url(/static/img/price.png)
     background-size 100% 100%
     padding-top px2vh(15) 
     box-sizing border-box
     overflow auto
     margin-top px2vh(10) 
 #main
-    height px2vh(220)
+    height px2vh(800)
     padding-top px2vh(10) 
     div 
         height 100%

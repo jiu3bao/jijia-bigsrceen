@@ -13,7 +13,7 @@ export default {
     data() {
         return {
           defaultProps: {
-            children: "children", //绑定名字与接口文档名字一样
+            children: "childrenList", //绑定名字与接口文档名字一样
             label: "name"
           }
         };
@@ -45,7 +45,7 @@ export default {
 	.cailiao
 		width px2vw(380) 
 		height px2vh(50) 
-		background url(../static/img/right.png)
+		background url(/static/img/right.png)
 		background-size 100% 100%
 		line-height px2vh(50)
 		font-size 16px
@@ -56,7 +56,7 @@ export default {
 	.leiming
 		width px2vw(380) 
 		height px2vh(240)
-		background url(../static/img/cailiao.png)
+		background url(/static/img/cailiao.png)
 		background-size 100% 100%
 		margin-top px2vh(10) 
 		overflow hidden

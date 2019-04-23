@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import Skeleton from 'C:\\Users\\Administrator\\Desktop\\jijia-bigsrceen\\core\\Skeleton.vue';
+import Skeleton from 'C:\\Users\\Administrator\\Desktop\\监测大屏\\core\\Skeleton.vue';
 
 
 export default new Vue({

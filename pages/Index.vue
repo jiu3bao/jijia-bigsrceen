@@ -13,16 +13,16 @@
        <div class='content'>
            <div class='left'>
                 <cate :cateList='cateList'></cate>
-                <price :allData='allData'></price>
-                <redar :allData='allData'></redar>
+                <price :season_price='season_price' :areaList='areaList'></price>
+                <redar :redarData='redarData'></redar>
            </div>
            <div class='center'>
-                <maps></maps>
-                <areas :allData='allData'> </areas>
+                <maps :areaList='areaList' :mapData='mapData'></maps>
+                <areas :area_price_hb='area_price_hb' :areaList='areaList'> </areas>
            </div>
            <div class='right'>
                <exponent></exponent>
-               <huanbi :area_price_hb='area_price_hb'></huanbi>
+               <huanbi :nearest_data='nearest_data' :areaList='areaList'></huanbi>
            </div>
        </div>
     </div>
@@ -47,19 +47,40 @@ export default {
     data(){
         return{
             date:'',
-            area_price_hb:[],
+            area_price_hb:[],//地区价格
+            season_price:[],// 柱状季度对比
             cateList:[],
             new_area_code:'',
-            allData:[]
+            allData:[],
+            month:[],
+            areaList:[],
+            areaCodeList:[],
+            nearest_data:[],
+            mapData:[],
+            redarData:[]
         }
     },
     created() {
-        this.get_cate_list()
-        //this.get_price_hb()
+        const t = new Date()
+        let y = t.getFullYear()
+        let m = t.getMonth() +1
+        let exm=''
+        if(m>9) {
+            exm = m-9
+            this.month = [exm>9?y+'-'+ exm:y+'-'+ '0'+exm, m>9?y+'-'+ m:y+'-'+ '0'+m]
+        } else {
+            let exy = y-1
+            exm = m+12-8
+            this.month = [exm>9?exy+'-'+ exm:exy+'-'+ '0'+exm, m>9?y+'-'+ m:y+'-'+ '0'+m]
+        }
+        this.get_area()
     },
     computed:{
         chose_map() {
             return this.$store.state.chosedMap
+        },
+        catelevel() {
+            return this.$store.state.chosedCate.level?this.$store.state.chosedCate.level:'2'
         },
         cateId() {
             return this.$store.state.chosedCate.id
@@ -67,19 +88,19 @@ export default {
     },
     watch:{
         chose_map: {
-            handler(val, oldval) {
-                console.log(val,oldval)
+            handler(val) {
                 if(val.length>0) {
-                    this.new_area_code = val[val.length-1]
-                    this.get_price_hb(new_area_code, this.cateId)
-                    this.get_data()
+                    this.get_nearest_data()
                 } 
             },
             deep: true
         },
         cateId(val) {
             this.get_price_hb()
-            this.get_data()
+            this.get_2season_data()
+            this.get_nearest_data()
+            this.get_map_data()
+            this.get_redar_data()
         }
     },
     metaInfo: {
@@ -122,28 +143,159 @@ export default {
             clock += mm; 
             return(clock); 
         },
-        async get_price_hb() {//获取价格环比数据 用于面积图
+        async get_price_hb() {//获取各地区近9月价格
             const data = {
-                areaId: this.new_area_code,
-                cateId: this.cateId
+                startDate: this.month[0],
+                endDate: this.month[1],
+                id: this.cateId,
+                orderType:'1',
+                area:this.areaCodeList.toString(),
+                type:'0',
+                level: this.catelevel
             }
             const res = await api.get_cate_data(data)
-            this.area_price_hb.push(res.data.list)
+            this.area_price_hb = res.data
+            
+            //this.area_price_hb = area_list
         },
-        async get_cate_list() {
-            const res = await api.get_cate({a:1})
-            this.cateList = res.data.data
-            this.cateId = this.cateList[0]
-            this.$store.commit('SET_CHOSED_CATE',this.cateId)
+        async get_cate_list() { //获取材料 默认选定材料
+            const res = await api.get_cate()
+            this.cateList = res.data
+            this.$store.commit('SET_CHOSED_CATE',this.cateList[0])
         },
-        async get_data() {// 获取全部数据
+        async get_2season_data() {// 获取2个季度对比
+            const t = new Date()
+            const m = t.getMonth()+1
+            const y = t.getFullYear()
+            let season = []
+            let exseason=[]
+            if(m<4) {
+                season = [y+'-'+'10',y+'-'+'12']
+                const exy = y-1
+                exseason=[exy+'-'+'06',exy+'-'+'09']
+            } else if(m<7) {
+                season = [y+'-'+'01',y+'-'+'03']
+                const exy = y-1
+                exseason = [exy+'-'+'09',exy+'-'+'12']
+            } else if(m<10) {
+                season = [y+'-'+'04',y+'-'+'06']
+                exseason = [y+'-'+'01',y+'-'+'03']
+            } else {
+                season = [y+'-'+'07',y+'-'+'09']
+                exseason = [y+'-'+'04',y+'-'+'06']
+            }
             const data = {
-                areaId: this.new_area_code,
-                cateId: this.cateId
+                startDate: season[0],
+                endDate: season[1],
+                id: this.cateId,
+                orderType:'1',
+                type:'1',
+                area:this.areaCodeList.toString(),
+                level: this.catelevel
             }
             const res = await api.get_cate_data(data)
-            this.allData = res.data.list
-        } 
+            const exdata = {
+                startDate: exseason[0],
+                endDate: exseason[1],
+                id: this.cateId,
+                orderType:'1',
+                type:'1',
+                area:this.areaCodeList.toString(),
+                level: this.catelevel
+            }
+            const exres = await api.get_cate_data(exdata)
+            this.season_price = [exres.data,res.data]
+        },
+        async get_area() { // 获取区域 
+            const res = await api.get_area()
+            this.areaList = res.data
+            res.data.forEach(item =>{
+                this.areaCodeList.push(item.id)
+            })
+            this.get_cate_list()
+        }, 
+        async get_nearest_data() {// 面积图数据 获取近4个月数据 多省份
+            const t = new Date()
+            const m = t.getMonth()+1
+            const y = t.getFullYear()
+            let season = []
+            if(m<4) {
+                // season = [y+'-'+'01',y+'-'+'03']
+                season = [y-1+'-'+'10',y-1+'-'+'12']
+            } else if(m<7) {
+                // season = [y+'-'+'04',y+'-'+'06']
+                season = [y+'-'+'01',y+'-'+'03']
+            } else if(m<10) {
+                // season = [y+'-'+'07',y+'-'+'09']
+                season = [y+'-'+'04',y+'-'+'06']
+            } else {
+                // season = [y+'-'+'10',y+'-'+'12']
+                season = [y1+'-'+'07',y1+'-'+'09']
+            }
+            let area_arr = []
+            this.chose_map.map(item => {
+                area_arr.push(item.id)
+            })
+            const data = {
+                startDate: season[0],
+                endDate: season[1],
+                id: this.cateId,
+                orderType:'1',
+                area: area_arr.toString(),
+                type:'0',
+                level: this.catelevel
+            }
+            const res = await api.get_cate_data(data)
+            this.nearest_data = res.data
+        },
+        async get_map_data() { // 获取地图数据
+            const t = new Date()
+            const y = t.getFullYear()
+            let m = t.getMonth()+1
+            if(m<11) {
+                m='0'+(m-1)
+            } else {
+                m=(m-1)
+            }
+            const data = {
+                type:"0",
+                area:this.areaCodeList.toString(),
+                startDate: y+'-' +m,
+                endDate: y+'-' +m,
+                id: this.cateId,
+                orderType: '1',
+                level: this.catelevel	
+            }
+            console.log(data,'ddddd')
+            const res = await api.get_cate_data(data)//拿到材料数据的接口
+            this.mapData = res.data
+        },
+        async get_redar_data() { //获取雷达图数据 获取材料近一年数据 按季度划分
+            const t = new Date()
+            const m = t.getMonth()+1
+            const y = t.getFullYear()
+            let season
+            if(m<4) {
+                season = [y-1+'-'+'03',y+'-'+'03']
+            } else if(m<7) {
+                season = [y-1+'-'+'06',y+'-'+'06']
+            } else if(m<10) {
+                season = [y-1+'-'+'09',y+'-'+'09']
+            } else {
+                season = [y+'-'+'01',y+'-'+'12']
+            }
+            const data = {
+                startDate: season[0],
+                endDate: season[1],
+                id: this.cateId,
+                orderType:'1',
+                type:'1',
+                area:'53',
+                level: this.catelevel
+            }
+            const res = await api.get_cate_data(data)
+            this.redarData = res.data
+        }
     },
     mounted(){
         //每1秒刷新时间
@@ -173,7 +325,7 @@ px2vh(px)
     padding-top  px2vh(20)
     display  flex
     justify-content center
-    background url(../static/img/top.png) 
+    background url(/static/img/top.png) 
     background-size 100% 100%
 .tuwen img
     width px2vw(32)
