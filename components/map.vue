@@ -12,6 +12,10 @@
             </div>
         </div>
         <div class="map">
+            
+        </div>
+        <div @click='router2' class='route'>
+            点击进入控制中心
         </div>
     </div>
 
@@ -107,7 +111,6 @@ export default {
                     }
                     data.push(obj)
                 })
-                console.log(data)
                 this.init_map(data)
             },
             deep: true
@@ -176,7 +179,6 @@ export default {
                             return reg.test(item.add)
                         })
                         const area_item = arr[0]
-                        console.log(area_item,'aaaa')
                         time = area_item.asmdate.split(' ')[0]
                         imgsrc = area_item.huanbi?area_item.huanbi>0?'../static/img/up.png':'../static/img/downs.png':''
                         const res = `<div class='hov' style=" width:230px;
@@ -231,7 +233,6 @@ export default {
             });
             chart.on('click', par => {
                 const reg = new RegExp(par.name.substr(0,2))
-                console.log(reg)
                 const area_item = this.areaList.find(item => {
                     return reg.test(item.name)
                 })
@@ -240,6 +241,9 @@ export default {
                     this.$store.commit('ADD_CHOSED_MAP', area_item)
                 }
             });
+        },
+        router2() {
+           window.location.href='http://182.247.245.27:8017/home/distX/index.html#/'
         }
     },
 }
@@ -253,9 +257,11 @@ px2vh(px)
 
 .ditu
     height px2vh(700) 
-    padding px2vh(20) px2vw(20)
+    padding px2vh(20) px2vw(20) 0 px2vh(20)
     overflow hidden
     box-sizing border-box
+    display flex
+    flex-direction column
 .shuzi
     width px2vw(1080)
     height px2vh(65) 
@@ -311,4 +317,10 @@ px2vh(px)
     font-size 20px
     color rgba(0,255,198,1)
     margin-left px2vw(20)
+.route 
+    color #7284B2
+    text-decoration underline
+    cursor pointer
+    
+
 </style>

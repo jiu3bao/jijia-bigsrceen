@@ -2,9 +2,11 @@
 <template>
     <div class="area">
         <div class="dizhou">各地州市{{this.$store.state.chosedCate.name}}价格情况</div>
-        <div class="adxbox"  @mouseenter="pauseScroll" @mouseleave="resumeScroll" >
+        <div class="adxbox">
+            <div class='shadow' @mouseenter="pauseScroll" @mouseleave="resumeScroll" ></div>
             <el-table 
                 :data="tableData"
+                class='tt'
                 style="width: 100%">
                 <el-table-column
                     prop="name"
@@ -104,7 +106,7 @@ export default {
         scrollAuto() {//滚动
         // 动画开始
         let $sw = $(".adxbox")
-        let sHeight = $(".adxbox").height()
+        let sHeight = $(".tt").height()
         if(sHeight < 100) {
             return
         } else {
@@ -131,7 +133,7 @@ export default {
     }
     },
     mounted() {
- 
+
     }
 }
 
@@ -167,7 +169,15 @@ px2vh(px)
     padding-bottom px2vh(5)
     box-sizing border-box
     overflow-x hidden
-    padding-left px2vh(30)   
+    padding-left px2vh(30) 
+    position relative  
+    .shadow 
+        width px2vw(1080)
+        height px2vh(180)
+        position fixed
+        bottom 0
+        z-index 111
+        
     
 .ads-data
     width px2vw(1080) 

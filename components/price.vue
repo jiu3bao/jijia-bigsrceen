@@ -2,7 +2,7 @@
 <template>
     <div class="price">
         <div class="jiage">{{this.$store.state.chosedCate.name}}价格对比</div>
-        <div class="duibi">
+        <div class="duibi" @mouseenter="pauseScroll" @mouseleave="resumeScroll">
              <div id="main"></div>
         </div>
     </div>
@@ -10,6 +10,7 @@
 <script>
 // 价格对比组件
 import echarts from 'echarts'
+import $ from 'jquery';
 export default {
     name:"price",
     data() {
@@ -27,7 +28,6 @@ export default {
     watch:{
         season_price:{
             handler(val) {
-                console.log(val,'ssssppp')
                 let area_arr = []
                 let val1 = []
                 let val2 = []
@@ -50,7 +50,6 @@ export default {
                     
                     val1.unshift(Number(item.price).toFixed(2))
                 })
-                console.log(area_arr,'123112')
                 const m1 = val[0][0]?new Date(val[0][0].asmdate).getMonth()+1:''
                 const m2 = val[1][0]?new Date(val[1][0].asmdate).getMonth()+1:''
                 if(m1>9) {
@@ -75,6 +74,7 @@ export default {
                     val2.unshift(Number(item.price).toFixed(2))
                 })
                 this.init(area_arr,legend,val1,val2)
+                
             }
         }
     },
@@ -84,7 +84,6 @@ export default {
             //this.areaList.push(list)
         },
         init(area,legend,val1,val2){
-            console.log(legend,'legend')
             var myChart = echarts.init(document.getElementById('main'))
             var  option = {
                 title: {
@@ -178,8 +177,41 @@ export default {
 
                 ]
             };
-         myChart.setOption(option);
-        }
+            myChart.setOption(option);
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    this.scrollAuto()
+                }, 0)
+            })
+        },
+        scrollAuto() {//滚动
+            // 动画开始
+            let $sw = $(".duibi")
+            let sHeight = $("#main").height()
+            if(sHeight < 100) {
+                return
+            } else {
+                $sw.scrollTop(0)
+                this.rightAm = TweenMax.to(".duibi", 100, {
+                    scrollTo: {
+                        y: "max"
+                    },
+                    repeat: -1,
+                    yoyo: true,
+                    repeatDelay: 0,
+                    delay:0
+                })
+            }
+        },
+        pauseScroll() {
+            if(!this.rightAm) return
+            this.rightAm.pause()
+            this.rightTime = this.rightAm.time()
+        },
+        resumeScroll() {
+            if(!this.rightAm) return
+            this.rightAm.play()
+        },
       
     },
 }

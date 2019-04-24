@@ -65,7 +65,6 @@ export default {
         // },
       	scrollAuto() {//滚动
             // 动画开始
-            console.log(123132)
             let $sw = $(".dataset")
             let sHeight = $("#con").height()
             if(sHeight < 100) {

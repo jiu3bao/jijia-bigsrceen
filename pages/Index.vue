@@ -266,7 +266,6 @@ export default {
                 orderType: '1',
                 level: this.catelevel	
             }
-            console.log(data,'ddddd')
             const res = await api.get_cate_data(data)//拿到材料数据的接口
             this.mapData = res.data
         },

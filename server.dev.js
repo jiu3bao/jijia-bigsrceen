@@ -23,12 +23,12 @@ if (process.argv.length >= 3 && process.argv[2] !== 'dev') {
  */
 var proxyTable = {//设置接口的路径，代理在这里改动
     // proxy table example
-    // '/api': {
-    //     target: 'http://192.168.8.121:8016',
-    //     pathRewrite: { '^/api': '' },
-    //     changeOrigin: true,
-    //     secure: false
-    // }
+    '/api': {
+        target: 'http://182.247.245.27:8017',
+        pathRewrite: { '^/api': '' },
+        changeOrigin: true,
+        secure: false
+    }
 };
 
 var port = process.env.PORT || 3010;
