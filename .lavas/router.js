@@ -2,34 +2,34 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
     
-import _15560720269299d49a922ebc8a6d77ca82c0a74289b98 from '@/pages/Appshell.vue';
+import _15562660106429d49a922ebc8a6d77ca82c0a74289b98 from '@/pages/Appshell.vue';
     
 
     
-import _1556072026929d2462dcf0c7beccd286c658e08187914 from '@/pages/Error.vue';
+import _1556266010642d2462dcf0c7beccd286c658e08187914 from '@/pages/Error.vue';
     
 
     
-import _155607202692967830448037326425509e44bce7632b7 from '@/pages/Index.vue';
+import _155626601064267830448037326425509e44bce7632b7 from '@/pages/Index.vue';
     
 
 
 let routes = [
     {
         "path": "/appshell",
-        "component": _15560720269299d49a922ebc8a6d77ca82c0a74289b98,
+        "component": _15562660106429d49a922ebc8a6d77ca82c0a74289b98,
         "meta": {},
         "name": "appshell"
     },
     {
         "path": "/",
-        "component": _155607202692967830448037326425509e44bce7632b7,
+        "component": _155626601064267830448037326425509e44bce7632b7,
         "meta": {},
         "name": "index"
     },
     {
         "path": "/error",
-        "component": _1556072026929d2462dcf0c7beccd286c658e08187914,
+        "component": _1556266010642d2462dcf0c7beccd286c658e08187914,
         "meta": {},
         "name": "error",
         "alias": "*"
